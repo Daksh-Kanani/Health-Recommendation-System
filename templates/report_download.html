@@ -1,0 +1,370 @@
+<!DOCTYPE html> <!-- Declares the document type and version of HTML -->
+<html lang="en"> <!-- Root element with language set to English -->
+<head> <!-- Contains meta information, title, and links to external resources -->
+    <meta charset="utf-8"> <!-- Sets the character encoding to UTF-8 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Makes the page responsive -->
+    <title>Health Report | Health Recommendation System</title> <!-- Sets the page title shown in browser tab -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"> <!-- Links to Bootstrap CSS framework -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"> <!-- Links to Font Awesome for icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"> <!-- Links to Google Fonts for custom typography -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"> <!-- Links to main application CSS using Flask's url_for helper -->
+    <link href="{{ url_for('static', filename='css/report.css') }}" rel="stylesheet"> <!-- Links to report specific CSS -->
+</head>
+<body> <!-- Contains all visible content -->
+    <div class="main-grid"> <!-- Main container with grid layout -->
+        <div class="container-fluid py-3"> <!-- Fluid container with vertical padding -->
+            <div class="nav-links mb-3"> <!-- Navigation links with bottom margin -->
+                <a href="/" class="btn btn-outline-primary"> <!-- Back button linking to home page -->
+                    <i class="fas fa-home me-2"></i>Back to Home <!-- Icon with text -->
+                </a>
+                <button id="downloadReportBtn" class="btn download-btn"> <!-- Download button with custom styling -->
+                    <i class="fas fa-file-pdf me-2"></i>Download Report <!-- PDF icon with text -->
+                </button>
+            </div>
+            
+            <div id="reportContainer" class="report-container"> <!-- Container for report content, targeted by JS for PDF generation -->
+                <div class="report-header"> <!-- Report header section -->
+                    <h1 class="report-title">Health Recommendation Report</h1> <!-- Main report title -->
+                    <p class="report-subtitle">AI-Generated Health Analysis</p> <!-- Subtitle -->
+                    <p class="report-date">Generated on: {{ report.generated_date }}</p> <!-- Generation date from Flask template variable -->
+                </div>
+
+                <div class="symptoms-banner"> <!-- Banner displaying reported symptoms -->
+                    <div class="symptoms-content"> <!-- Content container for symptoms -->
+                        <h3><i class="fas fa-clipboard-list" style="color: #00A67E; margin-right: 8px;"></i><span style="color: #00A67E;">Reported Symptoms</span></h3> <!-- Section heading with icon -->
+                        <p>{{ report.symptoms }}</p> <!-- Displays symptoms from report data -->
+                    </div>
+                </div>
+
+                <div class="report-section"> <!-- Section for diagnosed condition -->
+                    <h2 class="section-title"> <!-- Section title with icon -->
+                        <i class="fas fa-virus-covid"></i> <!-- Virus icon -->
+                        Diagnosed Condition <!-- Section heading text -->
+                    </h2>
+                    <p>{{ report.predicted_disease }}</p> <!-- Displays predicted disease from report data -->
+                </div>
+
+                <div class="report-section"> <!-- Section for medical description -->
+                    <h2 class="section-title"> <!-- Section title with icon -->
+                        <i class="fas fa-notes-medical"></i> <!-- Medical notes icon -->
+                        Medical Description <!-- Section heading text -->
+                    </h2>
+                    <p>{{ report.dis_des }}</p> <!-- Displays disease description from report data -->
+                </div>
+
+                <!-- Two-column layout for Preventive Measures and Recommended Medications -->
+                <div class="row"> <!-- Bootstrap row for two-column layout -->
+                    <div class="col-md-6"> <!-- Column taking half of row width on medium screens -->
+                        <div class="report-section"> <!-- Section for preventive measures -->
+                            <h2 class="section-title"> <!-- Section title with icon -->
+                                <i class="fas fa-hand-holding-medical"></i> <!-- Medical care icon -->
+                                Preventive Measures <!-- Section heading text -->
+                            </h2>
+                            <ul class="info-list"> <!-- Unordered list for precautions -->
+                                {% for precaution in report.my_precautions %} <!-- Loop through each precaution -->
+                                    <li>{{ precaution }}</li> <!-- List item for each precaution -->
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6"> <!-- Column taking half of row width on medium screens -->
+                        <div class="report-section"> <!-- Section for medications -->
+                            <h2 class="section-title"> <!-- Section title with icon -->
+                                <i class="fas fa-pills"></i> <!-- Pills icon -->
+                                Recommended Medications <!-- Section heading text -->
+                            </h2>
+                            <ul class="info-list"> <!-- Unordered list for medications -->
+                                {% for medication in report.medications %} <!-- Loop through each medication -->
+                                    <li>{{ medication }}</li> <!-- List item for each medication -->
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Two-column layout for Physical Activity Guidelines and Dietary Recommendations -->
+                <div class="row"> <!-- Bootstrap row for two-column layout -->
+                    <div class="col-md-6"> <!-- Column taking half of row width on medium screens -->
+                        <div class="report-section"> <!-- Section for physical activity -->
+                            <h2 class="section-title"> <!-- Section title with icon -->
+                                <i class="fas fa-running"></i> <!-- Running person icon -->
+                                Physical Activity Guidelines <!-- Section heading text -->
+                            </h2>
+                            <ul class="info-list"> <!-- Unordered list for workout recommendations -->
+                                {% for work in report.workout %} <!-- Loop through each workout recommendation -->
+                                    <li>{{ work }}</li> <!-- List item for each workout recommendation -->
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6"> <!-- Column taking half of row width on medium screens -->
+                        <div class="report-section"> <!-- Section for dietary recommendations -->
+                            <h2 class="section-title"> <!-- Section title with icon -->
+                                <i class="fas fa-apple-alt"></i> <!-- Apple icon -->
+                                Dietary Recommendations <!-- Section heading text -->
+                            </h2>
+                            <ul class="info-list"> <!-- Unordered list for diet recommendations -->
+                                {% for diet in report.my_diet %} <!-- Loop through each diet recommendation -->
+                                    <li>{{ diet }}</li> <!-- List item for each diet recommendation -->
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="disclaimer"> <!-- Disclaimer section at bottom of report -->
+                    <i class="fas fa-exclamation-triangle"></i> <!-- Warning triangle icon -->
+                    <p>This report is generated by AI and is not 100% accurate. For proper diagnosis, please visit your nearest healthcare facility.</p>
+                    <!-- Disclaimer text warning about AI limitations -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script> <!-- Bootstrap JS bundle -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <!-- jsPDF library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> <!-- html2canvas for converting HTML to image -->
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { // Execute when DOM is fully loaded
+            // Download functionality
+            const downloadBtn = document.getElementById('downloadReportBtn'); // Get reference to download button
+            
+            // Function to generate and download PDF
+            function generateAndDownloadPDF() { // Function that handles PDF generation and download
+                const { jsPDF } = window.jspdf; // Get jsPDF constructor from global object
+                const reportContainer = document.getElementById('reportContainer'); // Get reference to report container element
+                
+                // Show loading state
+                const originalBtnText = downloadBtn.innerHTML; // Store original button text
+                downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating PDF...'; // Show loading spinner and text
+                downloadBtn.disabled = true; // Disable button during processing
+                
+                // Create a clone of the report to modify for PDF
+                const reportClone = reportContainer.cloneNode(true); // Deep clone the report element
+                
+                // Apply styles for PDF generation
+                reportClone.style.width = '270mm'; // Wider than A4 width to use more space
+                reportClone.style.padding = '3mm'; // Add padding
+                reportClone.style.backgroundColor = 'white'; // Set background color
+                reportClone.style.position = 'absolute'; // Position absolutely
+                reportClone.style.left = '-9999px'; // Move off-screen
+                reportClone.style.top = '-9999px'; // Move off-screen
+                
+                // Make elements more compact for PDF
+                const sections = reportClone.querySelectorAll('.report-section'); // Get all report sections
+                sections.forEach(section => { // Iterate through each section
+                    section.style.marginBottom = '6px'; // Reduce bottom margin
+                    section.style.padding = '6px'; // Reduce padding
+                    section.style.width = '100%'; // Use full width
+                });
+                
+                // Ensure the two-column layout is preserved in PDF
+                const row = reportClone.querySelectorAll('.row'); // Get all row elements
+                if (row.length > 0) { // Check if rows exist
+                    row.forEach(r => { // Iterate through each row
+                        r.style.display = 'flex'; // Use flexbox layout
+                        r.style.width = '100%'; // Use full width
+                        
+                        const columns = r.querySelectorAll('.col-md-6'); // Get all column elements
+                        columns.forEach(col => { // Iterate through each column
+                            col.style.flex = '0 0 50%'; // Set flex basis to 50%
+                            col.style.maxWidth = '50%'; // Set maximum width to 50%
+                            col.style.boxSizing = 'border-box'; // Include padding in width calculation
+                            col.style.paddingRight = '3px'; // Reduce right padding
+                            col.style.paddingLeft = '3px'; // Reduce left padding
+                        });
+                    });
+                }
+                
+                // Make text larger
+                const paragraphs = reportClone.querySelectorAll('p'); // Get all paragraph elements
+                paragraphs.forEach(p => { // Iterate through each paragraph
+                    p.style.fontSize = '11pt'; // Set font size
+                    p.style.marginBottom = '3px'; // Reduce bottom margin
+                });
+                
+                // Make headings larger and ensure they're green
+                const headings = reportClone.querySelectorAll('h2'); // Get all h2 elements
+                headings.forEach(h => { // Iterate through each heading
+                    h.style.fontSize = '14pt'; // Set font size
+                    h.style.marginBottom = '5px'; // Reduce bottom margin
+                    h.style.color = '#00A67E'; // Set text color to green
+                });
+                
+                // Make sure section titles are green
+                const sectionTitles = reportClone.querySelectorAll('.section-title'); // Get all section title elements
+                sectionTitles.forEach(title => { // Iterate through each title
+                    title.style.color = '#00A67E'; // Set text color to green
+                });
+                
+                // Ensure report title is green
+                const reportTitle = reportClone.querySelector('.report-title'); // Get report title element
+                if (reportTitle) { // Check if title exists
+                    reportTitle.style.color = '#00A67E'; // Set text color to green
+                }
+                
+                // Ensure the symptoms content heading is properly styled
+                const symptomsHeading = reportClone.querySelector('.symptoms-content h3'); // Get symptoms heading element
+                if (symptomsHeading) { // Check if heading exists
+                    symptomsHeading.style.fontSize = '14pt'; // Set font size
+                    symptomsHeading.style.marginBottom = '5px'; // Reduce bottom margin
+                    symptomsHeading.style.display = 'flex'; // Use flexbox layout
+                    symptomsHeading.style.alignItems = 'center'; // Center items vertically
+                }
+                
+                // Ensure the symptoms icon is properly styled
+                const symptomsIcon = reportClone.querySelector('.symptoms-content h3 i'); // Get symptoms icon element
+                if (symptomsIcon) { // Check if icon exists
+                    symptomsIcon.style.color = '#00A67E'; // Set icon color to green
+                    symptomsIcon.style.marginRight = '8px'; // Add right margin
+                    symptomsIcon.style.fontSize = '14pt'; // Set font size
+                }
+                
+                // Ensure the heading text is green
+                const symptomsHeadingText = reportClone.querySelector('.symptoms-content h3 span'); // Get heading text element
+                if (symptomsHeadingText) { // Check if text element exists
+                    symptomsHeadingText.style.color = '#00A67E'; // Set text color to green
+                    symptomsHeadingText.style.fontSize = '14pt'; // Set font size
+                }
+                
+                // Ensure the symptoms text is properly styled
+                const symptomsText = reportClone.querySelector('.symptoms-content p'); // Get symptoms text element
+                if (symptomsText) { // Check if text element exists
+                    symptomsText.style.fontSize = '11pt'; // Set font size
+                    symptomsText.style.margin = '0'; // Remove margin
+                    symptomsText.style.color = '#000'; // Set text color to black
+                    symptomsText.style.fontWeight = '500'; // Set font weight to medium
+                }
+                
+                // Make list items larger
+                const listItems = reportClone.querySelectorAll('.info-list li'); // Get all list item elements
+                listItems.forEach(item => { // Iterate through each list item
+                    item.style.marginBottom = '3px'; // Reduce bottom margin
+                    item.style.fontSize = '11pt'; // Set font size
+                });
+                
+                // Make sure all elements are visible and properly styled for PDF
+                const allElements = reportClone.querySelectorAll('*'); // Get all elements in clone
+                allElements.forEach(el => { // Iterate through each element
+                    // Ensure text is visible
+                    el.style.color = el.style.color || '#000'; // Set text color if not already set
+                    // Ensure backgrounds are preserved
+                    if (getComputedStyle(el).backgroundColor !== 'rgba(0, 0, 0, 0)') { // If element has background color
+                        el.style.backgroundColor = getComputedStyle(el).backgroundColor; // Preserve it
+                    }
+                    // Ensure borders are visible
+                    if (getComputedStyle(el).border !== '') { // If element has border
+                        el.style.border = getComputedStyle(el).border; // Preserve it
+                    }
+                });
+                
+                // Ensure the report header has the right styling
+                const header = reportClone.querySelector('.report-header'); // Get report header element
+                if (header) { // Check if header exists
+                    header.style.borderBottom = '1px solid #00A67E'; // Add green bottom border
+                    header.style.paddingBottom = '5px'; // Add bottom padding
+                    header.style.marginBottom = '10px'; // Add bottom margin
+                    header.style.textAlign = 'center'; // Center text
+                }
+                
+                // Ensure all icons are green
+                const icons = reportClone.querySelectorAll('.fa, .fas, .far, .fab'); // Get all icon elements
+                icons.forEach(icon => { // Iterate through each icon
+                    // Keep warning icon red
+                    if (!icon.classList.contains('fa-exclamation-triangle')) { // If not warning icon
+                        icon.style.color = '#00A67E'; // Set icon color to green
+                    }
+                });
+                
+                // Ensure the symptoms banner has the correct background color
+                const symptomsBanner = reportClone.querySelector('.symptoms-banner'); // Get symptoms banner element
+                if (symptomsBanner) { // Check if banner exists
+                    symptomsBanner.style.backgroundColor = '#e9f7f3'; // Set light green background
+                    symptomsBanner.style.padding = '12px'; // Add padding
+                }
+                
+                // Add the clone to the body
+                document.body.appendChild(reportClone); // Append clone to document body
+                
+                // Generate PDF
+                html2canvas(reportClone, { // Convert HTML to canvas
+                    scale: 2, // Higher scale for better quality
+                    logging: false, // Disable logging
+                    useCORS: true, // Allow cross-origin images
+                    allowTaint: true, // Allow tainted canvas
+                    backgroundColor: '#ffffff' // Set white background
+                }).then(canvas => { // When canvas is generated
+                    // Remove the clone
+                    document.body.removeChild(reportClone); // Remove clone from document
+                    
+                    // Create PDF in landscape orientation for more space
+                    const pdf = new jsPDF({ // Create new PDF document
+                        orientation: 'landscape', // Landscape orientation
+                        unit: 'mm', // Use millimeters as unit
+                        format: 'a4' // A4 paper size
+                    });
+                    
+                    // Calculate dimensions to fit on a single page
+                    const imgData = canvas.toDataURL('image/png'); // Convert canvas to PNG data URL
+                    const pageWidth = pdf.internal.pageSize.getWidth(); // Get PDF page width
+                    const pageHeight = pdf.internal.pageSize.getHeight(); // Get PDF page height
+                    
+                    // Calculate the scale to fit the canvas within the PDF page
+                    const canvasWidth = canvas.width; // Get canvas width
+                    const canvasHeight = canvas.height; // Get canvas height
+                    const scale = Math.min(pageWidth / canvasWidth, pageHeight / canvasHeight) * 0.98; // Calculate scale factor
+                    
+                    // Calculate dimensions after scaling
+                    const scaledWidth = canvasWidth * scale; // Calculate scaled width
+                    const scaledHeight = canvasHeight * scale; // Calculate scaled height
+                    
+                    // Calculate position to center the image
+                    const x = (pageWidth - scaledWidth) / 2; // Calculate x position
+                    const y = 5; // Position closer to the top
+                    
+                    // Add the image to the PDF
+                    pdf.addImage(imgData, 'PNG', x, y, scaledWidth, scaledHeight); // Add image to PDF
+                    
+                    // Add a title to the PDF document
+                    pdf.setProperties({ // Set PDF document properties
+                        title: 'Health Recommendation Report', // Document title
+                        subject: 'AI-Generated Health Analysis', // Document subject
+                        author: 'Health Recommendation System', // Document author
+                        keywords: 'health, report, recommendation, medical', // Document keywords
+                        creator: 'Health Recommendation System' // Document creator
+                    });
+                    
+                    // Get current date for filename
+                    const now = new Date(); // Create date object
+                    const fileName = `Health_Report_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}.pdf`;
+                    // Create filename with current date (YYYYMMDD format)
+                    
+                    pdf.save(fileName); // Save PDF with filename
+                    
+                    // Reset button state
+                    setTimeout(() => { // Delay execution
+                        downloadBtn.innerHTML = originalBtnText; // Restore original button text
+                        downloadBtn.disabled = false; // Re-enable button
+                    }, 1000); // After 1 second
+                });
+            }
+            
+            // Automatically start download when page loads
+            setTimeout(function() { // Delay execution
+                generateAndDownloadPDF(); // Call function to generate and download PDF
+            }, 1500); // After 1.5 seconds (allows time for page resources to load)
+            
+            // Also keep the button functionality for manual download
+            if (downloadBtn) { // Check if button exists
+                downloadBtn.addEventListener('click', generateAndDownloadPDF); // Add click event listener
+            }
+        });
+    </script>
+</body>
+</html>

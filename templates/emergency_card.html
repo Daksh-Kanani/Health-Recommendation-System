@@ -1,0 +1,422 @@
+<!DOCTYPE html> <!-- Declares the document type and version of HTML -->
+<html lang="en"> <!-- Root element with language set to English -->
+<head> <!-- Contains meta information, title, and links to external resources -->
+    <meta charset="utf-8"> <!-- Sets the character encoding to UTF-8 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Makes the page responsive -->
+    <title>Emergency Information Card | Health Recommendation System</title> <!-- Sets the page title shown in browser tab -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"> <!-- Links to Bootstrap CSS framework -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"> <!-- Links to Font Awesome for icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"> <!-- Links to Google Fonts for custom typography -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"> <!-- Links to main application CSS using Flask's url_for helper -->
+    <link href="{{ url_for('static', filename='css/emergency_card.css') }}" rel="stylesheet"> <!-- Links to emergency card specific CSS -->
+    <!-- Inline CSS styles that override default styles -->
+    <style>
+        /* Ensures scrolling works properly */
+        body {
+            overflow: auto !important; 
+            height: auto !important; /* Allows content to expand naturally */
+        }
+        
+        /* Makes the grid at least full viewport height */
+        .main-grid {
+            min-height: 100vh; 
+            height: auto; /* Allows it to grow with content */
+        }
+        
+        /* Enables vertical scrolling in each section */
+        .left-section, .right-section {
+            overflow-y: auto; 
+            height: auto; /* Allows sections to expand with content */
+            min-height: 100vh; /* Makes sections at least full viewport height */
+        }
+        
+        /* Shows all content without scrollbar */
+        .results-content {
+            overflow-y: visible; 
+            max-height: none; /* Removes height restriction */
+        }
+        
+        /* Responsive styles for smaller screens */
+        @media (max-width: 1024px) { 
+            /* Changes layout from grid to block on smaller screens */
+            .main-grid {
+                display: block; 
+            }
+            
+            /* Allows sections to size based on content */
+            .left-section, .right-section {
+                min-height: auto; 
+            }
+        }
+    </style>
+</head>
+<body> <!-- Contains all visible content -->
+    <div class="main-grid"> <!-- Main container with grid layout -->
+        <div class="left-section"> <!-- Left column for form input -->
+            <h1 class="brand" style="font-size: 3.2rem;">Emergency Information Card</h1> <!-- Main heading with custom size -->
+            <p class="description"> <!-- Description text explaining purpose -->
+                Create a personalized emergency medical card that first responders and healthcare providers can use to quickly access your critical health information during emergencies.
+            </p>
+            
+            <div class="developer-info"> <!-- Credits the developers -->
+                Developed by Daksh Kanani and Sujal Kyada
+            </div>
+
+            <div class="nav-links mb-4"> <!-- Navigation links with bottom margin -->
+                <a href="/" class="btn btn-outline-primary"> <!-- Back button linking to home page -->
+                    <i class="fas fa-arrow-left me-2"></i>Back to Health Recommendation System <!-- Icon with text -->
+                </a>
+            </div>
+
+            <div class="input-section"> <!-- Container for the form -->
+                <form id="emergencyCardForm" action="/generate_emergency_card" method="post"> <!-- Form that submits to generate_emergency_card endpoint -->
+                    <h3 class="mb-2">Personal Information</h3> <!-- Section heading -->
+                    <div class="mb-2"> <!-- Form group with bottom margin -->
+                        <label for="fullName" class="form-label">Full Name*</label> <!-- Label for input field, asterisk indicates required -->
+                        <input type="text" class="form-control" id="fullName" name="fullName" required> <!-- Text input field, required attribute enforces validation -->
+                    </div>
+                    
+                    <div class="mb-2"> <!-- Form group for date of birth -->
+                        <label for="dateOfBirth" class="form-label">Date of Birth*</label> <!-- Required field label -->
+                        <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" required> <!-- Date picker input -->
+                    </div>
+                    
+                    <div class="row"> <!-- Bootstrap row for multi-column layout -->
+                        <div class="col-md-4 mb-2"> <!-- Column taking 4/12 of row width on medium screens -->
+                            <label for="bloodType" class="form-label">Blood Type</label> <!-- Label for blood type dropdown -->
+                            <select class="form-select" id="bloodType" name="bloodType"> <!-- Dropdown select input -->
+                                <option value="">Select Blood Type</option> <!-- Default empty option -->
+                                <option value="A+">A+</option> <!-- Blood type options -->
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                                <option value="Unknown">Unknown</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4 mb-2"> <!-- Column for weight input -->
+                            <label for="weight" class="form-label">Weight (kg)</label> <!-- Label with unit specification -->
+                            <input type="number" class="form-control" id="weight" name="weight" min="0" step="0.1"> <!-- Numeric input with decimal precision -->
+                        </div>
+                        
+                        <div class="col-md-4 mb-2"> <!-- Column for height input -->
+                            <label for="height" class="form-label">Height (cm)</label> <!-- Label with unit specification -->
+                            <input type="number" class="form-control" id="height" name="height" min="0"> <!-- Numeric input with minimum value -->
+                        </div>
+                    </div>
+                    
+                    <h3 class="mt-3 mb-2">Medical Information</h3> <!-- Section heading with top and bottom margins -->
+                    <div class="mb-2"> <!-- Form group for medical conditions -->
+                        <label for="medicalConditions" class="form-label">Medical Conditions</label> <!-- Label for textarea -->
+                        <textarea class="form-control" id="medicalConditions" name="medicalConditions" rows="3" 
+                            placeholder="List your diagnosed conditions, separated by commas">{% if predicted_disease %}{{ predicted_disease }}{% endif %}</textarea>
+                        <!-- Textarea with placeholder text and conditional population from predicted_disease if available -->
+                    </div>
+                    
+                    <div class="mb-2"> <!-- Form group for medications -->
+                        <label for="medications" class="form-label">Current Medications</label> <!-- Label for textarea -->
+                        <textarea class="form-control" id="medications" name="medications" rows="3" 
+                            placeholder="List your current medications, dosages, and frequency">{% if medications %}{{ medications|join(', ') }}{% endif %}</textarea>
+                        <!-- Textarea with placeholder text and conditional population from medications array if available -->
+                    </div>
+                    
+                    <div class="mb-2"> <!-- Form group for allergies -->
+                        <label for="allergies" class="form-label">Allergies</label> <!-- Label for textarea -->
+                        <textarea class="form-control" id="allergies" name="allergies" rows="2" 
+                            placeholder="List any allergies to medications, foods, or other substances"></textarea>
+                        <!-- Textarea with placeholder text for allergies information -->
+                    </div>
+                    
+                    <h3 class="mb-2">Emergency Contacts</h3> <!-- Section heading -->
+                    
+                    <div class="mb-2"> <!-- Form group for primary contact name -->
+                        <label for="emergencyContact1Name" class="form-label">Primary Contact Name*</label> <!-- Required field label -->
+                        <input type="text" class="form-control" id="emergencyContact1Name" name="emergencyContact1Name" required> <!-- Required text input -->
+                    </div>
+                    
+                    <div class="mb-2"> <!-- Form group for primary contact phone -->
+                        <label for="emergencyContact1Phone" class="form-label">Phone Number*</label> <!-- Required field label -->
+                        <input type="tel" class="form-control" id="emergencyContact1Phone" name="emergencyContact1Phone" required> <!-- Required telephone input -->
+                    </div>
+                    
+                    <div class="row"> <!-- Bootstrap row for two-column layout -->
+                        <div class="col-md-6 mb-2"> <!-- Column taking half of row width on medium screens -->
+                            <label for="doctorName" class="form-label">Primary Doctor's Name</label> <!-- Label for doctor name -->
+                            <input type="text" class="form-control" id="doctorName" name="doctorName"> <!-- Text input for doctor name -->
+                        </div>
+                        
+                        <div class="col-md-6 mb-2"> <!-- Column for doctor's phone -->
+                            <label for="doctorPhone" class="form-label">Doctor's Phone</label> <!-- Label for doctor phone -->
+                            <input type="tel" class="form-control" id="doctorPhone" name="doctorPhone"> <!-- Telephone input for doctor phone -->
+                        </div>
+                    </div>
+                    
+                    <div class="mb-2"> <!-- Form group for additional information -->
+                        <label for="additionalInfo" class="form-label">Additional Important Information</label> <!-- Label for textarea -->
+                        <textarea class="form-control" id="additionalInfo" name="additionalInfo" rows="2" 
+                            placeholder="Any other critical information (e.g., implanted devices, advance directives)"></textarea>
+                        <!-- Textarea with placeholder text for additional medical information -->
+                    </div>
+                    
+                    <button type="submit" class="analyze-btn"> <!-- Submit button with custom styling -->
+                        <i class="fas fa-id-card"></i> <!-- ID card icon -->
+                        Generate Emergency Card <!-- Button text -->
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+       
+       
+       
+       
+        <div class="right-section"> <!-- Right column for displaying results -->
+            <!-- Warning message in upper right section -->
+            <div class="top-warning-message mb-3"> <!-- Warning message with bottom margin -->
+                <i class="fas fa-exclamation-triangle"></i> <!-- Warning triangle icon -->
+                <p>This emergency card is for informational purposes only. Always consult healthcare professionals for medical advice.</p>
+                <!-- Disclaimer text -->
+            </div>
+            
+            {% if emergency_card %} <!-- Conditional block that shows if emergency_card data exists -->
+            <div class="results-wrapper"> <!-- Container for results -->
+                <div class="d-flex align-items-center justify-content-between mb-3"> <!-- Flex container for header and button -->
+                    <h2 class="results-header mb-0">Emergency Information Card</h2> <!-- Section heading with no bottom margin -->
+                    <div>
+                        <button id="downloadCardBtn" class="btn btn-success"> <!-- Download button with success styling -->
+                            <i class="fas fa-download me-2"></i>Download Card <!-- Download icon with text -->
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="results-content" id="emergencyCardPreview"> <!-- Container for card preview, targeted by JS for PDF generation -->
+                    <div class="emergency-card"> <!-- Card container with styling -->
+                        <div class="emergency-header"> <!-- Card header section -->
+                            <h2>EMERGENCY MEDICAL INFORMATION</h2> <!-- Main card title -->
+                            <div class="emergency-subtitle">IN CASE OF EMERGENCY</div> <!-- Subtitle -->
+                        </div>
+                        
+                        <div class="personal-info"> <!-- Section for personal information -->
+                            <h3>{{ emergency_card.fullName }}</h3> <!-- Displays user's full name -->
+                            <div class="info-row"> <!-- Row for date of birth info -->
+                                <span class="info-label">DOB:</span> <!-- Label -->
+                                <span class="info-value">{{ emergency_card.dateOfBirth }}</span> <!-- Value from form data -->
+                            </div>
+                            {% if emergency_card.bloodType %} <!-- Conditional display of blood type if provided -->
+                            <div class="info-row"> <!-- Row for blood type info -->
+                                <span class="info-label">Blood Type:</span> <!-- Label -->
+                                <span class="info-value">{{ emergency_card.bloodType }}</span> <!-- Value from form data -->
+                            </div>
+                            {% endif %}
+                            {% if emergency_card.weight or emergency_card.height %} <!-- Conditional display if either weight or height provided -->
+                            <div class="info-row"> <!-- Row for physical measurements -->
+                                {% if emergency_card.weight %} <!-- Conditional display of weight if provided -->
+                                <span class="info-label">Weight:</span> <!-- Label -->
+                                <span class="info-value">{{ emergency_card.weight }} kg</span> <!-- Value with unit -->
+                                {% endif %}
+                                {% if emergency_card.height %} <!-- Conditional display of height if provided -->
+                                <span class="info-label ml-2">Height:</span> <!-- Label with left margin -->
+                                <span class="info-value">{{ emergency_card.height }} cm</span> <!-- Value with unit -->
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="medical-info"> <!-- Section for medical information -->
+                            {% if emergency_card.medicalConditions %} <!-- Conditional display of medical conditions if provided -->
+                            <div class="info-section"> <!-- Container for condition information -->
+                                <h4><i class="fas fa-heartbeat me-2"></i>Medical Conditions</h4> <!-- Section heading with icon -->
+                                <p>{{ emergency_card.medicalConditions }}</p> <!-- Displays medical conditions -->
+                            </div>
+                            {% endif %}
+                            
+                            {% if emergency_card.medications %} <!-- Conditional display of medications if provided -->
+                            <div class="info-section"> <!-- Container for medication information -->
+                                <h4><i class="fas fa-pills me-2"></i>Current Medications</h4> <!-- Section heading with icon -->
+                                <p>{{ emergency_card.medications }}</p> <!-- Displays medications -->
+                            </div>
+                            {% endif %}
+                            
+                            {% if emergency_card.allergies %} <!-- Conditional display of allergies if provided -->
+                            <div class="info-section"> <!-- Container for allergy information -->
+                                <h4><i class="fas fa-exclamation-triangle me-2"></i>Allergies</h4> <!-- Section heading with warning icon -->
+                                <p>{{ emergency_card.allergies }}</p> <!-- Displays allergies -->
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="contact-info"> <!-- Section for emergency contact information -->
+                            <h4><i class="fas fa-phone me-2"></i>Emergency Contacts</h4> <!-- Section heading with phone icon -->
+                            <div class="contact"> <!-- Container for primary contact -->
+                                <strong>{{ emergency_card.emergencyContact1Name }}</strong> <!-- Primary contact name in bold -->
+                                <div>{{ emergency_card.emergencyContact1Phone }}</div> <!-- Primary contact phone number -->
+                            </div>
+                            
+                            {% if emergency_card.doctorName %} <!-- Conditional display of doctor info if provided -->
+                            <div class="contact"> <!-- Container for doctor contact -->
+                                <strong>Dr. {{ emergency_card.doctorName }}</strong> <!-- Doctor name with prefix in bold -->
+                                <span>(Primary Physician)</span> <!-- Label identifying as primary physician -->
+                                {% if emergency_card.doctorPhone %} <!-- Conditional display of doctor phone if provided -->
+                                <div>{{ emergency_card.doctorPhone }}</div> <!-- Doctor's phone number -->
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if emergency_card.additionalInfo %} <!-- Conditional display of additional info if provided -->
+                        <div class="additional-info"> <!-- Container for additional information -->
+                            <h4><i class="fas fa-info-circle me-2"></i>Additional Information</h4> <!-- Section heading with info icon -->
+                            <p>{{ emergency_card.additionalInfo }}</p> <!-- Displays additional information -->
+                        </div>
+                        {% endif %}
+                        
+                        <div class="card-footer"> <!-- Footer section of the card -->
+                            <p class="mb-0">Card created on: {{ emergency_card.creationDate }}</p> <!-- Creation date with no bottom margin -->
+                            <p class="mb-0 text-danger">Please update this card regularly with current information</p> <!-- Warning in red text -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %} <!-- Alternative content to show if emergency_card data doesn't exist (initial state) -->
+            <div class="results-wrapper"> <!-- Container for preview content -->
+                <h2 class="results-header">Emergency Card Preview</h2> <!-- Section heading -->
+                <div class="results-content"> <!-- Container for preview content -->
+                    <div class="alert alert-info mb-4"> <!-- Info alert box with bottom margin -->
+                        <i class="fas fa-info-circle me-2"></i> <!-- Info icon -->
+                        Fill out the form to generate your emergency information card. The preview will appear here.
+                        <!-- Instructional text -->
+                    </div>
+                    <div class="emergency-card-benefits"> <!-- Container for benefits information -->
+                        <h4><i class="fas fa-shield-alt me-2"></i>Benefits of an Emergency Information Card</h4> <!-- Section heading with shield icon -->
+                        <ul> <!-- Unordered list of benefits -->
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Gives doctors your important health information in emergencies</li> <!-- Benefit with checkmark icon -->
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Helps medical staff make better decisions about your care</li> <!-- Benefit with checkmark icon -->
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Makes it easy to contact your family or friends quickly</li> <!-- Benefit with checkmark icon -->
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Helps avoid dangerous medication mix-ups during emergencies</li> <!-- Benefit with checkmark icon -->
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Very helpful if you have ongoing health conditions or allergies</li> <!-- Benefit with checkmark icon -->
+                        </ul>
+                        <div class="usage-tips mt-4"> <!-- Container for usage tips with top margin -->
+                            <h5><i class="fas fa-lightbulb me-2"></i>Usage Tips:</h5> <!-- Section heading with lightbulb icon -->
+                            <ol> <!-- Ordered list of tips -->
+                                <li>Keep a printed copy in your wallet or purse</li> <!-- Tip #1 -->
+                                <li>Store a digital copy on your smartphone</li> <!-- Tip #2 -->
+                                <li>Share with family members and close friends</li> <!-- Tip #3 -->
+                                <li>Update regularly when medications or conditions change</li> <!-- Tip #4 -->
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+   
+   
+   
+   
+   
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script> <!-- Bootstrap JS bundle -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <!-- jsPDF library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> <!-- html2canvas for converting HTML to image -->
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { // Execute when DOM is fully loaded
+            // Download functionality
+            const downloadBtn = document.getElementById('downloadCardBtn'); // Get reference to download button
+            if (downloadBtn) { // Check if button exists on page
+                downloadBtn.addEventListener('click', function() { // Add click event listener
+                    const { jsPDF } = window.jspdf; // Get jsPDF constructor from global object
+                    const emergencyCardPreview = document.getElementById('emergencyCardPreview'); // Get reference to card preview element
+                    
+                    // Create a clone of the emergency card to modify for PDF
+                    const cardClone = emergencyCardPreview.cloneNode(true); // Deep clone the card element
+                    
+                    // Apply styles for PDF generation
+                    cardClone.style.width = '210mm'; // Set width to A4 width
+                    cardClone.style.padding = '10mm'; // Add padding
+                    cardClone.style.backgroundColor = 'white'; // Set background color
+                    cardClone.style.position = 'absolute'; // Position absolutely
+                    cardClone.style.left = '-9999px'; // Move off-screen
+                    cardClone.style.top = '-9999px'; // Move off-screen
+                    
+                    // Make sure all elements are visible and properly styled for PDF
+                    const allElements = cardClone.querySelectorAll('*'); // Select all elements in clone
+                    allElements.forEach(el => { // Iterate through each element
+                        // Ensure text is visible
+                        el.style.color = el.style.color || '#000'; // Set text color if not already set
+                        // Ensure backgrounds are preserved
+                        if (getComputedStyle(el).backgroundColor !== 'rgba(0, 0, 0, 0)') { // If element has background color
+                            el.style.backgroundColor = getComputedStyle(el).backgroundColor; // Preserve it
+                        }
+                        // Ensure borders are visible
+                        if (getComputedStyle(el).border !== '') { // If element has border
+                            el.style.border = getComputedStyle(el).border; // Preserve it
+                        }
+                        // Set explicit font sizes
+                        el.style.fontSize = getComputedStyle(el).fontSize; // Preserve font size
+                    });
+                    
+                    // Ensure the emergency header has the right background color
+                    const header = cardClone.querySelector('.emergency-header'); // Get reference to header element
+                    if (header) { // Check if header exists
+                        header.style.backgroundColor = getComputedStyle(header).backgroundColor || '#00A67E'; // Set background color
+                        header.style.color = '#fff'; // Set text color to white
+                        header.style.padding = '15px'; // Add padding
+                        header.style.borderRadius = '10px'; // Add rounded corners
+                        header.style.marginBottom = '20px'; // Add bottom margin
+                        header.style.textAlign = 'center'; // Center text
+                    }
+                    
+                    // Add the clone to the body
+                    document.body.appendChild(cardClone); // Append clone to document body
+                    
+                    // Generate PDF
+                    html2canvas(cardClone, { // Convert HTML to canvas
+                        scale: 2, // Higher scale for better quality
+                        logging: false, // Disable logging
+                        useCORS: true, // Allow cross-origin images
+                        allowTaint: true, // Allow tainted canvas
+                        backgroundColor: '#ffffff' // Set white background
+                    }).then(canvas => { // When canvas is generated
+                        // Remove the clone
+                        document.body.removeChild(cardClone); // Remove clone from document
+                        
+                        // Create PDF
+                        const imgData = canvas.toDataURL('image/png'); // Convert canvas to PNG data URL
+                        const pdf = new jsPDF({ // Create new PDF document
+                            orientation: 'portrait', // Portrait orientation
+                            unit: 'mm', // Use millimeters as unit
+                            format: 'a4' // A4 paper size
+                        });
+                        
+                        // Calculate dimensions to fit on a single page
+                        const imgWidth = 190; // A4 width with margins
+                        const pageHeight = 297;  // A4 height
+                        const imgHeight = (canvas.height * imgWidth) / canvas.width; // Calculate proportional height
+                        
+                        // Add image to PDF
+                        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight); // Add image with 10mm margins
+                        
+                        // Add a title to the PDF document
+                        pdf.setProperties({ // Set PDF document properties
+                            title: 'Emergency Medical Information Card', // Document title
+                            subject: 'Medical Emergency Contact Information', // Document subject
+                            author: 'Health Recommendation System', // Document author
+                            keywords: 'emergency, medical, contact, information', // Document keywords
+                            creator: 'Health Recommendation System' // Document creator
+                        });
+                        
+                        pdf.save('Emergency_Medical_Card.pdf'); // Save PDF with filename
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

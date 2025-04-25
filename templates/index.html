@@ -1,0 +1,282 @@
+<!DOCTYPE html> <!-- This is an HTML5 document -->
+<html lang="en"> <!-- Defines the language of the document as English -->
+<head>
+    <meta charset="utf-8"> <!-- Sets the character encoding to UTF-8 for proper text rendering -->
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Makes the webpage responsive by setting the viewport width to device width with initial scale -->
+    <title>Health Recommendation System</title> <!-- Sets the title of the webpage that appears in browser tabs -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"> <!-- Links to Bootstrap CSS framework for responsive design and pre-built components -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"> <!-- Links to Font Awesome for icons used throughout the page -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"> <!-- Imports the Space Grotesk font family from Google Fonts -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"> <!-- Links to the custom CSS file using Flask's url_for function to generate the correct path -->
+    <style>
+        .btn-primary-custom {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        .btn-primary-custom:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            color: white;
+        }
+        /* General styles */
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        /* Add a new class for consistent button sizing */
+        .action-btn {
+            width: 220px;
+            display: inline-block;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-grid"> <!-- Main grid container that divides the page into two sections -->
+        <div class="left-section"> <!-- Left section contains the app title, description, and input form -->
+            <h1 class="brand" style="font-size: 3.2rem;">Health Recommendation System</h1> <!-- Main heading/title of the application -->
+            <p class="description"> 
+                Explore how our AI-powered health recommendation system can improve patient care. It provides personalized treatment plans and data-driven insights, helping doctors make more accurate decisions. This innovative tool is transforming healthcare for the better!
+            </p> <!-- Brief description of the application's purpose -->
+            
+            <div class="developer-info">
+                Developed by Daksh Kanani and Sujal Kyada
+            </div>
+
+            <div class="nav-links mb-4">
+                <a href="/emergency_card" class="btn btn-outline-danger">
+                    <i class="fas fa-id-card me-2"></i>Create Emergency Card
+                </a>
+            </div>
+
+            <div class="input-section"> <!-- Section containing the form for symptom input -->
+                <form action="/predict" method="post" id="symptomsForm"> <!-- Form that submits to the /predict route using POST method -->
+                    <div class="input-wrapper"> <!-- Wrapper for the input field and voice button -->
+                        <input type="text" 
+                               class="symptom-input" 
+                               id="symptoms" 
+                               name="symptoms" 
+                               placeholder="Describe your symptoms (e.g., itching, runny nose)"
+                               autocomplete="off"> <!-- Text input field for users to enter their symptoms -->
+                        <button type="button" 
+                                class="voice-btn" 
+                                id="voiceInput" 
+                                title="Voice input"> 
+                            <i class="fas fa-microphone"></i>
+                        </button> <!-- Voice input button with microphone icon -->
+                    </div> <!-- Wrapper for the input field and voice button -->
+
+                    {% if message %}
+                    <div class="alert alert-danger mb-3" role="alert"> 
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        {{ message }} 
+                    </div> <!-- Conditional alert message that displays if there's an error -->
+                    {% endif %}
+
+                    <button type="submit" class="analyze-btn"> 
+                        <i class="fas fa-stethoscope"></i>
+                        Analyze Symptoms
+                    </button> <!-- Submit button to analyze the entered symptoms -->
+                </form> <!-- Form that submits to the /predict route using POST method -->
+            </div> <!-- Section containing the form for symptom input -->
+        </div> <!-- Left section contains the app title, description, and input form -->
+
+        <div class="right-section"> <!-- Right section displays the analysis results -->
+            <!-- Warning message in upper right section -->
+            <div class="top-warning-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>This report is generated by AI and is not 100% accurate. For proper diagnosis, please visit your nearest healthcare facility.</p>
+            </div>
+            
+            {% if predicted_disease %}
+            <div class="results-wrapper"> <!-- Conditional section that only appears if a disease has been predicted -->
+                <div class="symptoms-banner"> <!-- Banner showing the symptoms the user reported -->
+                    <div class="symptoms-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    
+                    <div class="symptoms-content">
+                        <h3>Your Reported Symptoms</h3>
+                        <p>{{symptoms}}</p> <!-- Displays the symptoms entered by the user -->
+                    </div>
+                </div> <!-- Banner showing the symptoms the user reported -->
+
+                <div class="d-flex align-items-center justify-content-between mb-3"> 
+                    <h2 class="results-header mb-0">Analysis Results</h2>
+                    <div class="d-flex flex-column gap-2">
+                        <form action="/generate_report" method="post" target="_blank">
+                            <input type="hidden" name="symptoms" value="{{symptoms}}">
+                            <input type="hidden" name="predicted_disease" value="{{predicted_disease}}">
+                            <input type="hidden" name="dis_des" value="{{dis_des}}">
+                            {% for precaution in my_precautions %}
+                            <input type="hidden" name="my_precautions" value="{{precaution}}">
+                            {% endfor %}
+                            {% for med in medications %}
+                            <input type="hidden" name="medications" value="{{med}}">
+                            {% endfor %}
+                            {% for diet in my_diet %}
+                            <input type="hidden" name="my_diet" value="{{diet}}">
+                            {% endfor %}
+                            {% for work in workout %}
+                            <input type="hidden" name="workout" value="{{work}}">
+                            {% endfor %}
+                            <button type="submit" class="btn btn-primary-custom btn-sm action-btn">
+                                <i class="fas fa-file-pdf me-2"></i>Download Report
+                            </button>
+                        </form>
+                        <form action="/create_emergency_card" method="post">
+                            <input type="hidden" name="predicted_disease" value="{{predicted_disease}}">
+                            {% for med in medications %}
+                            <input type="hidden" name="medications" value="{{med}}">
+                            {% endfor %}
+                            <button type="submit" class="btn btn-danger btn-sm action-btn">
+                                <i class="fas fa-id-card me-2"></i>Create Emergency Card
+                            </button>
+                        </form>
+                    </div>
+                </div> <!-- Header for the analysis results section -->
+
+                <div class="results-content"> <!-- Container for all the result cards -->
+                    <div class="result-card"> 
+                        <h4>
+                            <i class="fas fa-virus-covid"></i>
+                            Diagnosed Condition
+                        </h4>
+                        <p>{{predicted_disease}}</p> <!-- Displays the predicted disease from the ML model -->
+                    </div> <!-- Card showing the diagnosed condition -->
+
+                    <div class="result-card"> 
+                        <h4>
+                            <i class="fas fa-notes-medical"></i>
+                            Medical Description
+                        </h4>
+                        <p>{{ dis_des }}</p> <!-- Displays the disease description from the database -->
+                    </div> <!-- Card showing the medical description of the condition -->
+
+                    <div class="result-card"> 
+                        <h4>
+                            <i class="fas fa-hand-holding-medical"></i>
+                            Preventive Measures
+                        </h4>
+                        <ul class="info-list"> 
+                            {% for i in my_precautions %}
+                                <li>{{ i }}</li>
+                            {% endfor %}
+                        </ul> <!-- List of preventive measures from the database -->
+                    </div> <!-- Card showing preventive measures for the condition -->
+
+                    <div class="result-card"> 
+                        <h4>
+                            <i class="fas fa-pills"></i>
+                            Recommended Medications
+                        </h4>
+                        <ul class="info-list"> 
+                            {% for i in medications %}
+                                <li>{{ i }}</li>
+                            {% endfor %}
+                        </ul> <!-- List of medications from the database -->
+                    </div> <!-- Card showing recommended medications -->
+
+                    <div class="result-card"> 
+                        <h4>
+                            <i class="fas fa-running"></i>
+                            Physical Activity Guidelines
+                        </h4>
+                        <ul class="info-list"> 
+                            {% for i in workout %}
+                                <li>{{ i }}</li>
+                            {% endfor %}
+                        </ul> <!-- List of workout recommendations from the database -->
+                    </div> <!-- Card showing physical activity guidelines -->
+
+                    <div class="result-card"> 
+                        <h4>
+                            <i class="fas fa-apple-alt"></i>
+                            Dietary Recommendations
+                        </h4>
+                        <ul class="info-list"> 
+                            {% for i in my_diet %}
+                                <li>{{ i }}</li>
+                            {% endfor %}
+                        </ul> <!-- List of diet recommendations from the database -->
+                    </div> <!-- Card showing dietary recommendations -->
+                </div> <!-- Container for all the result cards -->
+            </div> <!-- Conditional section that only appears if a disease has been predicted -->
+            {% endif %}
+            
+        </div> <!-- Right section displays the analysis results -->
+    </div> <!-- Main grid container that divides the page into two sections -->
+
+  
+
+    
+      <div id="statusToast" class="status-toast"> 
+        <i class="fas fa-microphone-alt"></i>
+        <span id="statusText">Listening to your symptoms...</span>
+    </div> <!-- Toast notification for voice recognition status -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script> <!-- Links to Bootstrap JavaScript bundle for interactive components -->
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { 
+            const voiceButton = document.getElementById('voiceInput'); 
+            const symptomsInput = document.getElementById('symptoms');
+            const statusToast = document.getElementById('statusToast');
+            const statusText = document.getElementById('statusText');
+            let isListening = false;
+            
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) { 
+                const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)(); 
+                recognition.continuous = false; 
+                recognition.interimResults = false; 
+                recognition.lang = 'en-US'; 
+
+                recognition.onstart = function() { 
+                    isListening = true;
+                    voiceButton.classList.add('listening'); 
+                    statusToast.classList.add('show'); 
+                    statusText.textContent = "Listening to your symptoms...";
+                };
+
+                recognition.onresult = function(event) { 
+                    const transcript = event.results[0][0].transcript; 
+                    symptomsInput.value = transcript; 
+                    statusText.textContent = 'Symptoms recorded successfully';
+                    setTimeout(() => { 
+                        statusToast.classList.remove('show');
+                    }, 2000);
+                };
+
+                recognition.onerror = function(event) { 
+                    console.error('Speech recognition error:', event.error);
+                    statusText.textContent = "Please try speaking again";
+                    setTimeout(() => { 
+                        statusToast.classList.remove('show');
+                    }, 2000);
+                };
+
+                recognition.onend = function() { 
+                    isListening = false;
+                    voiceButton.classList.remove('listening'); 
+                };
+
+                voiceButton.addEventListener('click', function() { 
+                    if (!isListening) {
+                        recognition.start(); 
+                    } else {
+                        recognition.stop(); 
+                        statusToast.classList.remove('show'); 
+                    }
+                });
+            } else {
+                voiceButton.style.display = 'none'; 
+                console.log('Speech recognition not supported');
+            }
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/reportGenerator.js') }}"></script>
+</body>
+</html>

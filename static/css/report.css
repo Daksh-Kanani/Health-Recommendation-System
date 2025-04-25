@@ -1,0 +1,213 @@
+/* Report Page Styles */
+body {
+    overflow: auto !important;
+    height: auto !important;
+    font-family: 'Space Grotesk', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.main-grid {
+    min-height: 100vh;
+    height: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.report-container {
+    max-width: 98%;
+    margin: 10px auto;
+    padding: 15px;
+    background-color: white;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    /* Set a fixed height for print */
+    page-break-inside: avoid;
+}
+
+.report-header {
+    text-align: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #00A67E;
+}
+
+.report-title {
+    color: #00A67E;
+    font-weight: 700;
+    font-size: 2.2rem;
+    margin-bottom: 5px;
+}
+
+.report-subtitle {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.report-date {
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: 5px;
+}
+
+.report-section {
+    margin-bottom: 12px;
+    padding: 10px;
+    background-color: #f4f9f7;
+    border-radius: 8px;
+    width: 100%;
+}
+
+.section-title {
+    color: #00A67E;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+}
+
+.section-title i {
+    margin-right: 8px;
+    font-size: 1.1rem;
+}
+
+.symptoms-banner {
+    display: flex;
+    align-items: center;
+    background-color: #e9f7f3;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    width: 100%;
+}
+
+.symptoms-content {
+    width: 100%;
+}
+
+.symptoms-content h3 {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    color: #333;
+    display: flex;
+    align-items: center;
+}
+
+.symptoms-content h3 span {
+    color: #00A67E;
+}
+
+.symptoms-content p {
+    margin: 0;
+    color: #000;
+    font-size: 1.05rem;
+    font-weight: 500;
+}
+
+.info-list {
+    padding-left: 15px;
+    margin-bottom: 0;
+    font-size: 1.05rem;
+}
+
+.info-list li {
+    margin-bottom: 4px;
+}
+
+.report-section p {
+    margin-bottom: 0;
+    font-size: 1.05rem;
+}
+
+.download-btn {
+    background-color: #00A67E;
+    border-color: #00A67E;
+    color: white;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.download-btn:hover {
+    background-color: #008c69;
+    border-color: #008c69;
+    color: white;
+}
+
+.disclaimer {
+    font-size: 0.8rem;
+    color: #d63939;
+    background-color: #ffeeee;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.disclaimer i {
+    margin-right: 10px;
+    font-size: 1rem;
+}
+
+.nav-links {
+    margin-top: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-links a, .nav-links button {
+    margin: 0;
+    color: #00A67E;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.container-fluid {
+    max-width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* Two-column layout styles */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -5px;
+    margin-left: -5px;
+    width: 100%;
+}
+
+.col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+    padding-right: 5px;
+    padding-left: 5px;
+    box-sizing: border-box;
+}
+
+/* Print styles to ensure one page */
+@media print {
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .report-container {
+        margin: 0;
+        padding: 10px;
+        box-shadow: none;
+        border-radius: 0;
+    }
+    
+    .nav-links, .download-btn {
+        display: none;
+    }
+    
+    .report-section {
+        break-inside: avoid;
+    }
+}

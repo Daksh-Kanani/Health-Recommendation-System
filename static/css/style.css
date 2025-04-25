@@ -1,0 +1,513 @@
+:root { /* Defines CSS variables for consistent color scheme throughout the application */
+    --primary: #00A67E; /* Primary teal color used for buttons and accents */
+    --primary-dark: #008F6B; /* Darker shade of primary color for hover states */
+    --accent: #F4F9F7; /* Light background color for sections and cards */
+    --text: #1A2B3B; /* Dark color for main text content */
+    --text-light: #4A5567; /* Lighter text color for secondary content */
+    --bg: #FFFFFF; /* White background color */
+}
+
+* { /* Universal selector to reset default browser styles */
+    margin: 0; /* Removes default margin */
+    padding: 0; /* Removes default padding */
+    box-sizing: border-box; /* Includes padding and border in element width calculations */
+}
+
+body { /* Styles for the entire page body */
+    font-family: 'Space Grotesk', sans-serif; /* Sets the primary font */
+    background: var(--bg); /* Sets background color using the CSS variable */
+    color: var(--text); /* Sets text color using the CSS variable */
+    line-height: 1.6; /* Sets line height for better readability */
+    height: 100vh; /* Sets height to 100% of viewport height */
+    overflow: hidden; /* Prevents scrolling on the body */
+}
+
+.main-grid { /* Main layout container */
+    display: grid; /* Uses CSS grid for layout */
+    grid-template-columns: 1fr 1fr; /* Creates two equal columns */
+    height: 100vh; /* Sets height to 100% of viewport height */
+}
+
+.left-section { /* Styles for the left column */
+    padding: 4rem; /* Adds spacing around content */
+    display: flex; /* Uses flexbox for layout */
+    flex-direction: column; /* Arranges children vertically */
+    justify-content: center; /* Centers content vertically */
+}
+
+.brand { /* Styles for the main heading */
+    font-size: 3.5rem; /* Large font size for emphasis */
+    font-weight: 700; /* Bold font weight */
+    line-height: 1.2; /* Tighter line height for headings */
+    margin-bottom: 1.5rem; /* Space below the heading */
+    color: var(--text); /* Text color from CSS variable */
+}
+
+.description { /* Styles for the description text */
+    font-size: 1.1rem; /* Slightly larger than default text */
+    color: var(--text-light); /* Lighter text color for contrast */
+    margin-bottom: 2.5rem; /* Space below the description */
+    max-width: 500px; /* Limits width for better readability */
+}
+
+.input-section { /* Container for the input form */
+    background: var(--accent); /* Light background color */
+    padding: 2rem; /* Spacing inside the container */
+    border-radius: 20px; /* Rounded corners */
+    margin-bottom: 2rem; /* Space below the section */
+}
+
+.input-wrapper { /* Container for the input field and voice button */
+    position: relative; /* Enables absolute positioning of children */
+    margin-bottom: 1.5rem; /* Space below the input wrapper */
+}
+
+.symptom-input { /* Styles for the text input field */
+    width: 100%; /* Full width of parent */
+    padding: 1.25rem 3.5rem 1.25rem 1.5rem; /* Padding with extra space for the voice button */
+    border: 2px solid rgba(26, 43, 59, 0.1); /* Light border */
+    border-radius: 15px; /* Rounded corners */
+    font-size: 1rem; /* Standard font size */
+    background: white; /* White background */
+    transition: all 0.3s ease; /* Smooth transition for hover/focus effects */
+}
+
+.symptom-input:focus { /* Styles when input is focused */
+    outline: none; /* Removes default focus outline */
+    border-color: var(--primary); /* Changes border color to primary color */
+    box-shadow: 0 0 0 4px rgba(0, 166, 126, 0.1); /* Adds a subtle glow effect */
+}
+
+.voice-btn { /* Styles for the voice input button */
+    position: absolute; /* Positions button over the input field */
+    right: 12px; /* Distance from right edge */
+    top: 50%; /* Centers vertically */
+    transform: translateY(-50%); /* Fine-tunes vertical centering */
+    background: var(--primary); /* Primary color background */
+    border: none; /* Removes default border */
+    width: 42px; /* Fixed width */
+    height: 42px; /* Fixed height for square shape */
+    border-radius: 12px; /* Rounded corners */
+    color: white; /* White icon color */
+    cursor: pointer; /* Shows pointer cursor on hover */
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+    display: flex; /* Uses flexbox for centering icon */
+    align-items: center; /* Centers icon vertically */
+    justify-content: center; /* Centers icon horizontally */
+}
+
+.voice-btn:hover { /* Styles when voice button is hovered */
+    background: var(--primary-dark); /* Darker background color */
+    transform: translateY(-50%) scale(1.05); /* Slight enlargement effect */
+}
+
+.voice-btn.listening { /* Styles when voice recognition is active */
+    animation: pulse 1.5s infinite; /* Pulsing animation */
+}
+
+.analyze-btn { /* Styles for the submit button */
+    width: 100%; /* Full width of parent */
+    background: var(--primary); /* Primary color background */
+    color: white; /* White text color */
+    border: none; /* Removes default border */
+    padding: 1.25rem; /* Spacing inside button */
+    border-radius: 15px; /* Rounded corners */
+    font-size: 1.1rem; /* Slightly larger text */
+    font-weight: 600; /* Semi-bold text */
+    cursor: pointer; /* Shows pointer cursor on hover */
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+    display: flex; /* Uses flexbox for layout */
+    align-items: center; /* Centers content vertically */
+    justify-content: center; /* Centers content horizontally */
+    gap: 0.75rem; /* Space between icon and text */
+}
+
+.analyze-btn:hover { /* Styles when submit button is hovered */
+    background: var(--primary-dark); /* Darker background color */
+    transform: translateY(-2px); /* Slight upward movement */
+}
+
+.right-section { /* Styles for the right column */
+    background: var(--accent); /* Light background color */
+    padding: 1rem 2rem 2rem; /* Reduced top padding */
+    height: 100vh; /* Full viewport height */
+    display: flex; /* Uses flexbox for layout */
+    flex-direction: column; /* Arranges children vertically */
+}
+
+.results-wrapper { /* Container for the results content */
+    background: white; /* White background */
+    border-radius: 25px; /* Rounded corners */
+    padding: 1.5rem 2rem 2rem; /* Adjusted padding to match upper section */
+    height: 100%; /* Full height of parent */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+    display: flex; /* Uses flexbox for layout */
+    flex-direction: column; /* Arranges children vertically */
+}
+
+.results-header { /* Styles for the results heading */
+    font-size: 1.8rem; /* Large font size */
+    font-weight: 700; /* Bold text */
+    color: var(--text); /* Text color from CSS variable */
+    margin-bottom: 1.5rem; /* Space below heading */
+    padding-bottom: 1rem; /* Extra padding at bottom */
+    border-bottom: 2px solid var(--accent); /* Bottom border for separation */
+}
+
+.results-content { /* Container for the scrollable results */
+    flex: 1; /* Takes up remaining space */
+    overflow-y: auto; /* Enables vertical scrolling */
+    padding-right: 1rem; /* Right padding for scrollbar */
+}
+
+.results-content::-webkit-scrollbar { /* Styles for the scrollbar width */
+    width: 6px; /* Thin scrollbar */
+}
+
+.results-content::-webkit-scrollbar-track { /* Styles for the scrollbar track */
+    background: var(--accent); /* Light background color */
+    border-radius: 3px; /* Rounded corners */
+}
+
+.results-content::-webkit-scrollbar-thumb { /* Styles for the scrollbar thumb */
+    background: var(--primary); /* Primary color */
+    border-radius: 3px; /* Rounded corners */
+}
+
+.result-card { /* Styles for each result card */
+    background: var(--accent); /* Light background color */
+    border-radius: 15px; /* Rounded corners */
+    padding: 1.5rem; /* Spacing inside card */
+    margin-bottom: 1rem; /* Space between cards */
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+}
+
+.result-card:hover { /* Styles when card is hovered */
+    transform: translateY(-2px); /* Slight upward movement */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Shadow for depth */
+}
+
+.result-card h4 { /* Styles for card headings */
+    color: var(--primary); /* Primary color text */
+    font-size: 1.1rem; /* Slightly larger text */
+    font-weight: 600; /* Semi-bold text */
+    margin-bottom: 1rem; /* Space below heading */
+    display: flex; /* Uses flexbox for layout */
+    align-items: center; /* Centers content vertically */
+    gap: 0.75rem; /* Space between icon and text */
+}
+
+.result-card p { /* Styles for card paragraphs */
+    color: var(--text); /* Text color from CSS variable */
+    line-height: 1.6; /* Increased line height for readability */
+    margin: 0; /* Removes default margins */
+}
+
+.download-btn {
+    background-color: var(--primary) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+}
+
+.download-btn:hover {
+    background-color: var(--primary-dark) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.download-btn i {
+    font-size: 1rem !important;
+}
+
+.info-list { /* Styles for information lists */
+    list-style: none; /* Removes default bullets */
+    padding: 0; /* Removes default padding */
+    margin: 0; /* Removes default margin */
+}
+
+.info-list li { /* Styles for list items */
+    padding: 0.75rem 1rem; /* Spacing inside list items */
+    margin-bottom: 0.5rem; /* Space between list items */
+    background: white; /* White background */
+    border-radius: 8px; /* Rounded corners */
+    color: var(--text); /* Text color from CSS variable */
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+    display: flex; /* Uses flexbox for layout */
+    align-items: center; /* Centers content vertically */
+}
+
+.info-list li::before { /* Creates custom bullet points */
+    content: "•"; /* Bullet character */
+    color: var(--primary); /* Primary color */
+    font-size: 1.5rem; /* Larger size for visibility */
+    margin-right: 0.75rem; /* Space after bullet */
+    line-height: 1; /* Reduced line height for alignment */
+}
+
+.info-list li:hover { /* Styles when list item is hovered */
+    background: var(--primary); /* Primary color background */
+    color: white; /* White text */
+}
+
+.info-list li:hover::before { /* Styles for bullet when list item is hovered */
+    color: white; /* White bullet color */
+}
+
+.symptoms-banner { /* Styles for the symptoms summary banner */
+    background: var(--primary); /* Primary color background */
+    color: white; /* White text */
+    padding: 0.8rem 1.2rem; /* Reduced padding */
+    border-radius: 12px; /* Rounded corners */
+    margin-bottom: 1.2rem; /* Reduced margin */
+    display: flex; /* Uses flexbox for layout */
+    align-items: center; /* Centers content vertically */
+    gap: 1rem; /* Space between icon and content */
+}
+
+.symptoms-icon { /* Styles for the symptoms icon container */
+    background: rgba(255, 255, 255, 0.2); /* Semi-transparent white background */
+    width: 40px; /* Fixed width */
+    height: 40px; /* Fixed height for square shape */
+    border-radius: 10px; /* Rounded corners */
+    display: flex; /* Uses flexbox for centering */
+    align-items: center; /* Centers icon vertically */
+    justify-content: center; /* Centers icon horizontally */
+    font-size: 1.1rem; /* Slightly larger icon size */
+}
+
+.symptoms-content h3 { /* Styles for the symptoms heading */
+    font-size: 1.1rem; /* Slightly larger text */
+    margin-bottom: 0.25rem; /* Small space below heading */
+    font-weight: 600; /* Semi-bold text */
+}
+
+.symptoms-content p { /* Styles for the symptoms text */
+    font-size: 0.95rem; /* Slightly smaller text */
+    margin: 0; /* Removes default margins */
+    opacity: 0.9; /* Slightly transparent for visual hierarchy */
+    line-height: 1.4; /* Increased line height for readability */
+}
+
+.warning-message {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    border-radius: 4px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    max-width: 100%;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.warning-message i {
+    color: #ff9800;
+    font-size: 20px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.warning-message p {
+    margin: 0;
+    font-size: 14px;
+    color: #856404;
+    line-height: 1.5;
+    width: 100%;
+    font-weight: 500;
+}
+
+/* Ensure warning message is responsive */
+@media (max-width: 1200px) {
+    .warning-message {
+        padding: 12px;
+        margin-top: 18px;
+    }
+    
+    .warning-message p {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 992px) {
+    .warning-message {
+        margin-top: 15px;
+        padding: 10px 12px;
+    }
+    
+    .warning-message i {
+        font-size: 18px;
+    }
+    
+    .warning-message p {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+}
+
+@media (max-width: 768px) {
+    .left-section {
+        padding: 2rem;
+    }
+    
+    .warning-message {
+        margin-top: 12px;
+        margin-bottom: 5px;
+    }
+}
+
+.developer-info {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+    font-style: italic;
+    text-align: center;
+    padding: 8px 12px;
+    background-color: rgba(0, 166, 126, 0.08);
+    border-radius: 6px;
+    border-left: 3px solid #00A67E;
+}
+
+@media (max-width: 768px) {
+    .developer-info {
+        font-size: 12px;
+        padding: 6px 10px;
+        margin-bottom: 15px;
+    }
+}
+
+@keyframes pulse { /* Animation for the voice button when listening */
+    0% { transform: translateY(-50%) scale(1); } /* Starting state */
+    50% { transform: translateY(-50%) scale(1.1); } /* Middle state - enlarged */
+    100% { transform: translateY(-50%) scale(1); } /* Ending state - back to normal */
+}
+
+@media (max-width: 1024px) { /* Responsive styles for smaller screens */
+    .main-grid { /* Adjusts the main layout */
+        grid-template-columns: 1fr; /* Changes to a single column */
+        height: auto; /* Allows content to determine height */
+    }
+
+    body { /* Adjusts body styles */
+        height: auto; /* Allows content to determine height */
+        overflow: auto; /* Enables scrolling */
+    }
+
+    .left-section { /* Reduces padding on smaller screens */
+        padding: 2rem; /* Smaller padding */
+    }
+
+    .right-section { /* Reduces padding on smaller screens */
+        padding: 2rem; /* Smaller padding */
+    }
+
+    .brand { /* Reduces heading size on smaller screens */
+        font-size: 2.5rem; /* Smaller font size */
+    }
+}
+
+/* Top warning message in upper right section */
+.top-warning-message {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 10;
+}
+
+.top-warning-message i {
+    color: #ff9800;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.top-warning-message p {
+    margin: 0;
+    font-size: 11px;
+    color: #856404;
+    line-height: 1.3;
+    font-weight: 400;
+}
+
+/* Responsive styles for top warning message */
+@media (max-width: 1200px) {
+    .top-warning-message {
+        padding: 10px 12px;
+    }
+    
+    .top-warning-message p {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 992px) {
+    .top-warning-message {
+        padding: 8px 10px;
+        margin-bottom: 15px;
+    }
+    
+    .top-warning-message i {
+        font-size: 16px;
+    }
+    
+    .top-warning-message p {
+        font-size: 9px;
+        line-height: 1.2;
+    }
+}
+
+@media (max-width: 768px) {
+    .right-section {
+        padding: 2rem;
+    }
+    
+    .top-warning-message {
+        margin-bottom: 12px;
+    }
+}
+
+/* Mobile styles for better readability */
+@media (max-width: 767px) {
+    .top-warning-message {
+        padding: 10px 12px;
+        margin-bottom: 15px;
+    }
+    
+    .top-warning-message i {
+        font-size: 16px;
+    }
+    
+    .top-warning-message p {
+        font-size: 13px;
+        line-height: 1.4;
+        font-weight: 500;
+    }
+    
+    /* Other mobile-specific styles */
+    .symptoms-content h3 {
+        font-size: 1.1rem;
+    }
+    
+    .symptoms-content p {
+        font-size: 0.9rem;
+    }
+}

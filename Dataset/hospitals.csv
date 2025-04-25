@@ -1,0 +1,13 @@
+name,address,pincode,landmark,specialties,contact,emergency,rating
+City General Hospital,"123 Main Street, Downtown",110001,Near Central Park,"General Medicine, Surgery, Pediatrics",+91-9876543210,Yes,4.5
+Community Medical Center,"456 Park Avenue, Westside",110002,Opposite City Mall,"Cardiology, Orthopedics, Neurology",+91-9876543211,Yes,4.2
+St. Mary's Hospital,"789 Oak Lane, Northside",110003,Next to Public Library,"Obstetrics, Gynecology, Neonatology",+91-9876543212,Yes,4.7
+Metro Healthcare,"101 River Road, Eastside",110004,Behind Metro Station,"Emergency Medicine, Trauma Care",+91-9876543213,Yes,3.9
+Central Medical Institute,"202 Pine Street, Central District",110005,Near Central Market,"Oncology, Radiology, Nuclear Medicine",+91-9876543214,No,4.1
+Riverside Hospital,"303 Maple Avenue, Riverside",110006,Across from River Bridge,"Psychiatry, Psychology, Rehabilitation",+91-9876543215,Yes,4.3
+Sunshine Medical Center,"404 Elm Street, Southside",110007,Next to Sunshine Park,"Dermatology, Plastic Surgery, Cosmetic Medicine",+91-9876543216,No,4.0
+Unity Healthcare,"505 Cedar Boulevard, University Area",110008,Near University Campus,"Ophthalmology, ENT, Dental",+91-9876543217,Yes,4.6
+Hope Medical Center,"606 Birch Lane, Tech Park",110009,Adjacent to Tech Hub,"Nephrology, Urology, Dialysis",+91-9876543218,No,3.8
+Green Valley Hospital,"707 Walnut Drive, Green Valley",110010,Inside Green Valley,"Geriatrics, Palliative Care, Physical Therapy",+91-9876543219,Yes,4.4
+Apex Medical Center,"808 Cherry Street, Business District",110011,Near Business Center,"Sports Medicine, Physiotherapy, Nutrition",+91-9876543220,No,3.7
+Harmony Hospital,"909 Spruce Court, Harmony Heights",110012,Beside Community Center,"Alternative Medicine, Ayurveda, Homeopathy",+91-9876543221,Yes,4.2
